@@ -1,93 +1,45 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include "Graph.hpp"
+
 using namespace std;
-namespace ariel{//build defult constractor!!!!!!!!!!!!!!!
-    class Graph{
-    private:
-        int V; // Number of vertices
-        int** adjMat; // Adjacency matrix that represent the edges of the graph
+namespace ariel{
+    graph::graph(){//defult constractor
+        this->V = 0;
+        this->adjMat =NULL;
+    }
+    // Destructor to deallocate memory
+    graph::~graph() {
+        for (int i = 0; i < V; ++i) {
+            delete[] adjMat[i];
+        }
+        delete[] adjMat;
+    }
 
-    public:
-        Graph(int v,vector<vector<int>> g) : V(v) {//check if the matix is a square matrix
-            // Dynamically allocate memory for the adjacency matrix
-            adjMat = new int*[V];
-            for (int i = 0; i < V; i++) {
-                adjMat[i] = new int[V];
-                // Initialize all elements to 0
-                for (int j = 0; j < V; ++j) {
-                    adjMat[i][j] = g[i][j];
-                }
+    // Function to add an edge to the graph
+    void graph::addEdge(int u, int v) {
+        adjMat[u][v] = 1;
+        adjMat[v][u] = 1; // If it's an undirected graph
+        this->V++;
+    }
+
+
+    // Depth-First Search (DFS)
+    void graph::DFS(int v, bool visited[]) {
+        visited[v] = true;
+        for (unsigned int i = 0; i < V; ++i) {
+            if (adjMat[v][i] && !visited[i]) {
+                DFS((int)i, visited);
             }
         }
-        // Destructor to deallocate memory
-        ~Graph() {
-            for (int i = 0; i < V; ++i) {
-                delete[] adjMat[i];
-            }
-            delete[] adjMat;
-        }
+    }
 
-        // Function to add an edge to the graph
-        void addEdge(int u, int v) {
-            adjMat[u][v] = 1;
-            adjMat[v][u] = 1; // If it's an undirected graph
-            this->V++;
-        }
-
-        // Function to build the neighbor matrix using BFS
-        int** buildNeighborMatrix() {
-            int** neighborMatrix = new int*[V];
-            for (int i = 0; i < V; ++i) {
-                neighborMatrix[i] = new int[V];
-                // Initialize all elements to 0
-                for (int j = 0; j < V; ++j) {
-                    neighborMatrix[i][j] = 0;
-                }
-            }
-
-            // Perform BFS from each vertex
-            for (int i = 0; i < V; ++i) {
-                std::queue<int> q;
-                bool* visited = new bool[V] {false};
-
-                q.push(i);
-                visited[i] = true;
-
-                while (!q.empty()) {
-                    int u = q.front();
-                    q.pop();
-
-                    for (int v = 0; v < V; ++v) {
-                        if (adjMat[u][v] == 1 && !visited[v]) {
-                            neighborMatrix[i][v] = 1;
-                            visited[v] = true;
-                            q.push(v);
-                        }
-                    }
-                }
-
-                delete[] visited;
-            }
-
-            return neighborMatrix;
-        }
-
-         // Depth-First Search (DFS)
-        void DFS(int v, bool visited[]) {
-            visited[v] = true;
-            for (int i = 0; i < V; ++i) {
-                if (adjMat[v][i] && !visited[i]) {
-                    DFS(i, visited);
-                }
-            }
-        }
-
-        bool DFSFindCycle(int u, std::vector<bool>& visited, std::vector<int>& parent) {
+        bool graph::DFSFindCycle(unsigned int u, std::vector<bool>& visited, std::vector<int>& parent) {
         visited[u] = true;
-        for (int i = 0;i < this->V;i++) {
+        for (unsigned int i = 0;i < this->V;i++) {
             if (!visited[i] && i != u) {
-                parent[i] = u;
+                parent[i] = (int)u;
                 if (DFSFindCycle(i, visited, parent)) {
                     return true;
                 }
@@ -99,58 +51,77 @@ namespace ariel{//build defult constractor!!!!!!!!!!!!!!!
         return false;
     }
 
-         int printPath(std::vector<int>& parent, int u) {
-            std::vector<int> path;
-            int v = u;
+    int graph::printPath(std::vector<int>& parent, unsigned int u) {
+        std::vector<int> path;
+        unsigned int v = u;
+        int t = (int)u;
 
-            // Construct the cycle path
-            do {
-                path.push_back(v);
-                v = parent[v];
-            } while (v != u);
+        // Construct the cycle path
+        do {
+            path.push_back((int)v);
+            t = parent[v];
+            v = (unsigned int)t;
+        } while (v != u && t != u);
 
-            // Print the cycle
-            std::cout << "Cycle: ";
-            for (int i = path.size() - 1; i >= 0; --i) {
-                std::cout << path[i] << " ";
+        // Print the cycle
+        std::cout << "Cycle: ";
+        for (unsigned int i = path.size() - 1; i >= 0; --i) {
+            std::cout << path[i] << " ";
+        }
+        std::cout << std::endl;
+        return 1;
+    }
+
+    int graph::getV(){
+        return this->V;
+    }
+
+    int** graph::getAdjMat(){
+        return this->adjMat;
+    }
+
+    void graph::loadGraph(vector<vector<int>> g) {
+        // Reinitialize the current graph object with the new graph data
+        this->V = g.size();
+
+        // Deallocate memory for the existing adjacency matrix
+        for (unsigned int i = 0; i < V; ++i) {
+            delete[] adjMat[i];
+        }
+        delete[] adjMat;
+
+        // Dynamically allocate memory for the new adjacency matrix
+        adjMat = new int*[V];
+        for (unsigned int i = 0; i < V; ++i) {
+            adjMat[i] = new int[V];
+            // Initialize all elements to 0
+            for (unsigned int j = 0; j < V; ++j) {
+                adjMat[i][j] = g[i][j];
+            }
+        }
+    }
+
+    void graph::printGraph(){//print the number of vertex and edges
+        // Print the neighbor matrix
+        std::cout << "Neighbor Matrix:" << std::endl;
+        for (unsigned int i = 0; i < 5; ++i) {
+            for (unsigned int j = 0; j < 5; ++j) {
+                std::cout << this->adjMat[i][j] << " ";
             }
             std::cout << std::endl;
-            return 1;
         }
-
-        int getV(){
-            return this->V;
-        }
-
-        int** getAdjMat(){
-            return this->adjMat;
-        }
-
-        void loadGraph(vector<vector<int>> g){
-            Graph graph(sizeof(g),g);
-        }
-
-        void printGraph(){//print the number of vertex and edges
-            // Print the neighbor matrix
-            std::cout << "Neighbor Matrix:" << std::endl;
-            for (int i = 0; i < 5; ++i) {
-                for (int j = 0; j < 5; ++j) {
-                    std::cout << this->adjMat[i][j] << " ";
-                }
-                std::cout << std::endl;
-            }
-        }
-    };
-}
+    }
+    
+};
 
 using namespace ariel;
 int main() { // Create a graph with 5 vertices
-    vector<vector<int>> graph = {
+    vector<vector<int>> mygraph = {
         {0, 1, 0},
         {1, 0, 1},
         {0, 1, 0}
     };
-    Graph g(5,graph);
+    ariel::graph g(5,mygraph);
 
     // Add edges
     g.addEdge(0, 1);

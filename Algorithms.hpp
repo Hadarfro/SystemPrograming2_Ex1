@@ -1,7 +1,10 @@
-#include <Graph.hpp>
+#include "Graph.hpp"
+#include <vector>
 
-int isConnected(Graph g);
-int shortestPath(Graph g,int start,int end);
-int isContainsCycle(Graph g);
-int isBipartite(Graph g);
-int negativeCycle(Graph g);
+using namespace std; 
+using namespace ariel;
+int isConnected(ariel::graph g);
+int shortestPath(ariel::graph g,int start,int end);
+int isContainsCycle(ariel::graph g);
+int isBipartite(ariel::graph g);
+int negativeCycle(ariel::graph g);

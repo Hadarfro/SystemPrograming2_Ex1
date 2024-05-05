@@ -1,12 +1,13 @@
-#include "doctest.h"
+#include "doctest.hpp"
 #include "Algorithms.hpp"
 #include "Graph.hpp"
+#include <vector>
 
 using namespace std;
+using namespace ariel;
 
-TEST_CASE("Test isConnected")
-{
-    ariel::Graph g;
+TEST_CASE("Test isConnected"){
+    ariel::graph g;
     vector<vector<int>> graph = {
         {0, 1, 0},
         {1, 0, 1},
@@ -26,7 +27,7 @@ TEST_CASE("Test isConnected")
 
 TEST_CASE("Test shortestPath")
 {
-    ariel::Graph g;
+    ariel::graph g;
     vector<vector<int>> graph = {
         {0, 1, 0},
         {1, 0, 1},
@@ -45,7 +46,7 @@ TEST_CASE("Test shortestPath")
 }
 TEST_CASE("Test isContainsCycle")
 {
-    ariel::Graph g;
+    ariel::graph g;
     vector<vector<int>> graph = {
         {0, 1, 0},
         {1, 0, 1},
@@ -64,7 +65,7 @@ TEST_CASE("Test isContainsCycle")
 }
 TEST_CASE("Test isBipartite")
 {
-    ariel::Graph g;
+    ariel::graph g;
     vector<vector<int>> graph = {
         {0, 1, 0},
         {1, 0, 1},
@@ -92,7 +93,7 @@ TEST_CASE("Test isBipartite")
 }
 TEST_CASE("Test invalid graph")
 {
-    ariel::Graph g;
+    ariel::graph g;
     vector<vector<int>> graph = {
         {0, 1, 2, 0},
         {1, 0, 3, 0},
